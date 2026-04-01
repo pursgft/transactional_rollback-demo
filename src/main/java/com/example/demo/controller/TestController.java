@@ -92,4 +92,9 @@ public class TestController {
         userService.createUserWithAllergiesAndFailTransactional(dto);
         return ResponseEntity.ok("OK");
     }
+
+    @PostMapping("/users/{id}/allergies")
+    public void addAllergy(@PathVariable Integer id, @RequestParam String name) {
+        userService.addAllergy(id, name);
+    }
 }

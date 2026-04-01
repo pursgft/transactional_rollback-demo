@@ -123,6 +123,29 @@ public class UserService {
         allergyRepository.save(allergy2);
     }
 
+    @Transactional
+    public void addAllergy(Integer userId, String allergyName) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow();
+
+        // contamos alergias actuales
+        int currentAllergies = user.getAllergies().size();
+
+        if (currentAllergies >= 3) {
+            throw new RuntimeException("Max allergies reached");
+        }
+
+        // simulamos delay para provocar concurrencia
+        sleep(10);
+
+        Allergy allergy = new Allergy();
+        allergy.setName(allergyName);
+        allergy.setUser(user);
+
+        allergyRepository.save(allergy);
+    }
+
     // =========================
     // 🔄 MAPPERS
     // =========================
@@ -142,5 +165,13 @@ public class UserService {
                 .name(dto.getName())
                 .age(dto.getAge())
                 .build();
+    }
+
+    private void sleep(int seconds) {
+        try {
+            Thread.sleep(seconds * 1000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }
