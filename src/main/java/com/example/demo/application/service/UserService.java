@@ -1,8 +1,11 @@
 package com.example.demo.application.service;
 
+import com.example.demo.entity.Allergy;
 import com.example.demo.entity.User;
 import com.example.demo.model.UserDTO;
+import com.example.demo.repository.AllergyRepository;
 import com.example.demo.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AllergyRepository allergyRepository;
 
     // 🔹 GET paginado
     public List<UserDTO> getPaginatedUsers(int page, int size) {
@@ -64,6 +70,57 @@ public class UserService {
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
+    }
+
+
+
+    public void createUserWithAllergiesAndFail(UserDTO dto) {
+
+        // 1. Guardar usuario
+        User user = toEntity(dto);
+        User savedUser = userRepository.save(user);
+
+        // 2. Crear primera allergy (OK)
+        Allergy allergy1 = new Allergy();
+        allergy1.setName("Polen");
+        allergy1.setUser(savedUser);
+        allergyRepository.save(allergy1);
+
+        // 3. Forzar error 💥
+        if (true) {
+            throw new RuntimeException("💣 Simulación de fallo");
+        }
+
+        // 4. Esta nunca se ejecuta
+        Allergy allergy2 = new Allergy();
+        allergy2.setName("Gluten");
+        allergy2.setUser(savedUser);
+        allergyRepository.save(allergy2);
+    }
+
+    @Transactional
+    public void createUserWithAllergiesAndFailTransactional(UserDTO dto) {
+
+        // 1. Guardar usuario
+        User user = toEntity(dto);
+        User savedUser = userRepository.save(user);
+
+        // 2. Crear primera allergy (OK)
+        Allergy allergy1 = new Allergy();
+        allergy1.setName("Polen");
+        allergy1.setUser(savedUser);
+        allergyRepository.save(allergy1);
+
+        // 3. Forzar error 💥
+        if (true) {
+            throw new RuntimeException("💣 Simulación de fallo");
+        }
+
+        // 4. Esta nunca se ejecuta
+        Allergy allergy2 = new Allergy();
+        allergy2.setName("Gluten");
+        allergy2.setUser(savedUser);
+        allergyRepository.save(allergy2);
     }
 
     // =========================

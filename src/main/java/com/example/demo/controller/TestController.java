@@ -80,4 +80,16 @@ public class TestController {
         AllergyDTO saved = allergyService.saveAllergy(allergyDTO);
         return ResponseEntity.ok(saved);
     }
+
+    @PostMapping("/user/with-allergies-fail")
+    public ResponseEntity<String> testTransactionFail(@RequestBody UserDTO dto) {
+        userService.createUserWithAllergiesAndFail(dto);
+        return ResponseEntity.ok("OK");
+    }
+
+    @PostMapping("/user/with-allergies-fail-transactional")
+    public ResponseEntity<String> testTransaction(@RequestBody UserDTO dto) {
+        userService.createUserWithAllergiesAndFailTransactional(dto);
+        return ResponseEntity.ok("OK");
+    }
 }
