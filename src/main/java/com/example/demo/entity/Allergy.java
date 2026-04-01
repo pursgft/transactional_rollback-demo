@@ -1,11 +1,10 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jdk.jshell.Snippet;
+import lombok.*;
 
+@Builder
 @Entity
 @Table(name = "allergies")
 @Getter
@@ -23,4 +22,5 @@ public class Allergy {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
 }

@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
+import com.example.demo.application.service.AllergyService;
 import com.example.demo.application.service.UserService;
+import com.example.demo.model.AllergyDTO;
 import com.example.demo.model.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -57,5 +59,25 @@ public class TestController {
     @GetMapping("/user/search")
     public ResponseEntity<List<UserDTO>> findUsersByName(@RequestParam String name) {
         return ResponseEntity.ok(userService.findUsersByName(name));
+    }
+
+    @Autowired
+    private AllergyService allergyService;
+
+    // 🔹 GET allergy por ID
+    @GetMapping("/allergy/{id}")
+    public ResponseEntity<AllergyDTO> getAllergyById(@PathVariable Integer id) {
+        Optional<AllergyDTO> allergy = allergyService.getAllergyById(id);
+
+        return allergy
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    // 🔹 POST allergy
+    @PostMapping("/allergy")
+    public ResponseEntity<AllergyDTO> saveAllergy(@RequestBody AllergyDTO allergyDTO) {
+        AllergyDTO saved = allergyService.saveAllergy(allergyDTO);
+        return ResponseEntity.ok(saved);
     }
 }

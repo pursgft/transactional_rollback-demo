@@ -10,12 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 public class AllergyDTO {
+    private Integer id;
     private String name;
-    private Severity severity;
-
-    public enum Severity {
-        LOW,
-        MEDIUM,
-        HIGH
-    }
+    private Integer userId;
 }
