@@ -5,9 +5,10 @@ import com.example.demo.entity.User;
 import com.example.demo.model.AllergyDTO;
 import com.example.demo.repository.AllergyRepository;
 import com.example.demo.repository.UserRepository;
-import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
