@@ -2,6 +2,8 @@ package com.example.demo.controller;
 
 import com.example.demo.application.service.AllergyService;
 import com.example.demo.application.service.UserService;
+import com.example.demo.entity.Allergy;
+import com.example.demo.entity.User;
 import com.example.demo.model.AllergyDTO;
 import com.example.demo.model.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,8 +90,18 @@ public class TestController {
     }
 
     @PostMapping("/user/with-allergies-fail-transactional")
-    public ResponseEntity<String> testTransaction(@RequestBody UserDTO dto) {
+    public ResponseEntity<String> testTransaction(@RequestBody UserDTO dto) throws Exception {
         userService.createUserWithAllergiesAndFailTransactional(dto);
         return ResponseEntity.ok("OK");
+    }
+
+    @PutMapping("/user/test-isolation/{id}")
+    public String testIsolation(@PathVariable Integer id) throws InterruptedException {
+        return userService.testIsolation(id);
+    }
+
+    @PostMapping("/user/age-test")
+    public String ageTest(@RequestBody User user) throws InterruptedException {
+        return userService.testEdad(user);
     }
 }

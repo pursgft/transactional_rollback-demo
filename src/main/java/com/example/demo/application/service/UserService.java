@@ -2,6 +2,7 @@ package com.example.demo.application.service;
 
 import com.example.demo.entity.Allergy;
 import com.example.demo.entity.User;
+import com.example.demo.model.AllergyDTO;
 import com.example.demo.model.UserDTO;
 import com.example.demo.repository.AllergyRepository;
 import com.example.demo.repository.UserRepository;
@@ -98,8 +99,8 @@ public class UserService {
         allergyRepository.save(allergy2);
     }
 
-    @Transactional
-    public void createUserWithAllergiesAndFailTransactional(UserDTO dto) {
+    @Transactional(rollbackOn = Exception.class)
+    public void createUserWithAllergiesAndFailTransactional(UserDTO dto) throws Exception {
 
         // 1. Guardar usuario
         User user = toEntity(dto);
@@ -113,7 +114,7 @@ public class UserService {
 
         // 3. Forzar error 💥
         if (true) {
-            throw new RuntimeException("💣 Simulación de fallo");
+            throw new Exception("💣 Simulación de fallo");
         }
 
         // 4. Esta nunca se ejecuta
@@ -132,7 +133,7 @@ public class UserService {
                 .id(user.getId())
                 .name(user.getName())
                 .age(user.getAge())
-                .allergies(null)
+                .allergies(user.getAllergies().stream().map(allergy -> AllergyDTO.builder().id(allergy.getId()).name(allergy.getName()).userId(allergy.getUser().getId()).build()).toList())
                 .build();
     }
 
@@ -142,5 +143,34 @@ public class UserService {
                 .name(dto.getName())
                 .age(dto.getAge())
                 .build();
+    }
+    @Transactional
+    public String testIsolation(Integer id) throws InterruptedException {
+        User user = userRepository.findById(id).get();
+        if(!user.getAllergies().isEmpty())
+            return "no se permite más de una alergia";
+        else {
+            Thread.sleep(10000);
+            user.getAllergies().add(Allergy.builder().user(user).name("huevo").build());
+            userRepository.save(user);
+            return "alergia añadida";
+        }
+    }
+
+    @Transactional
+    public String testEdad(User user) throws InterruptedException {
+        List<User> usersWithXAge = userRepository.findAllByAgeIs(user.getAge());
+        if(!usersWithXAge.isEmpty()){
+            return "Ya hay usuarios con la misma edad";
+        }
+        else{
+            Thread.sleep(10000);
+            userRepository.save(user);
+            return "usuario añadido";
+        }
+    }
+
+    public void addAllergy(Integer id, String allergyName){
+
     }
 }
