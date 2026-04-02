@@ -24,4 +24,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Allergy> allergies;
+
+    @Version
+    private Integer version;
 }

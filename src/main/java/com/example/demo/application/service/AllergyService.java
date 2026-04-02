@@ -5,6 +5,7 @@ import com.example.demo.entity.User;
 import com.example.demo.model.AllergyDTO;
 import com.example.demo.repository.AllergyRepository;
 import com.example.demo.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +46,62 @@ public class AllergyService {
         return toDTO(saved);
     }
 
+    @Transactional
+    public void addAllergy_NoLock(Integer userId, String allergyName) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow();
+
+        if (user.getAllergies().size() >= 3) {
+            throw new RuntimeException("Max allergies reached");
+        }
+
+        sleep(5);
+
+        Allergy allergy = new Allergy();
+        allergy.setName(allergyName);
+        allergy.setUser(user);
+
+        allergyRepository.save(allergy);
+    }
+
+    @Transactional
+    public void addAllergy_Pessimistic(Long userId, String allergyName) {
+
+        User user = userRepository.findByIdForUpdate(userId);
+
+        if (user.getAllergies().size() >= 3) {
+            throw new RuntimeException("Max allergies reached");
+        }
+
+        sleep(2);
+
+        Allergy allergy = new Allergy();
+        allergy.setName(allergyName);
+        allergy.setUser(user);
+
+        allergyRepository.save(allergy);
+    }
+
+    @Transactional
+    public void addAllergy_Optimistic(Integer userId, String allergyName) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow();
+
+        if (user.getAllergies().size() >= 3) {
+            throw new RuntimeException("Max allergies reached");
+        }
+
+        sleep(2);
+
+        Allergy allergy = new Allergy();
+        allergy.setName(allergyName);
+        allergy.setUser(user);
+
+        allergyRepository.save(allergy);
+    }
+
     // =========================
     // 🔄 MAPPERS
     // =========================
@@ -62,5 +119,12 @@ public class AllergyService {
                 .id(dto.getId())
                 .name(dto.getName())
                 .build();
+    }
+    private void sleep(int seconds) {
+        try {
+            Thread.sleep(seconds * 1000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }

@@ -97,4 +97,10 @@ public class TestController {
     public void addAllergy(@PathVariable Integer id, @RequestParam String name) {
         userService.addAllergy(id, name);
     }
+
+    @GetMapping("/raceCondition/{id}/{allergyName}")
+    public ResponseEntity<String> getRaceCondition(@PathVariable Integer id, @PathVariable String allergyName) {
+        allergyService.addAllergy_NoLock(id, allergyName);
+        return ResponseEntity.ok("OK");
+    }
 }
